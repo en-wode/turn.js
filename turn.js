@@ -2099,7 +2099,7 @@
                 var opts = data.opts;
 
                 if (opts.turn) {
-                    data = opts.turn.ds.turn.data();
+                    data = opts.turn.data();
                     if (data.display == 'single')
                         return (opts.next > 1 || opts.page > 1) ? data.pageObjs[0] : null;
                     else
@@ -3444,8 +3444,9 @@
         }
     });
 
-    // Export some globals
+    var pluginName = "turn";
 
+    // Export some globals
     $.isTouch = isTouch;
     $.mouseEvents = mouseEvents;
     $.cssPrefix = getPrefix;
