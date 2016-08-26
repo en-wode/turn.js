@@ -1,10 +1,13 @@
 /**
  * turn.js 4th release
  * turnjs.com
- * turnjs.com/license.txt
+ * @license turnjs.com/license.txt
  *
- * Copyright (C) 2012 Emmanuel Garcia
- * All rights reserved
+ * @author Emmanuel Garcia
+ * @author Jonas Orrico
+ * @author Luiz Filipe Machado Barni
+ *
+ * @copyright 2012 Emmanuel Garcia - All rights reserved
  */
 
 (function($, window, document, undefined) {
@@ -14,7 +17,7 @@
     var has3d,
         hasRot,
         vendor = "",
-        version = "4.1.0",
+        version = "4.1.1",
         PI = Math.PI,
         A90 = PI / 2,
         isTouch = "ontouchstart" in window,
@@ -32,7 +35,7 @@
             out: "mouseout"
         },
 
-        /* 
+        /*
          * Contansts used for each corner
          *   | tl * tr |
          * l | *     * | r
@@ -40,16 +43,15 @@
          */
 
         corners = {
-            backward: ['bl', 'tl'],
-            forward: ['br', 'tr'],
-            all: ['tl', 'bl', 'tr', 'br', 'l', 'r']
+            forward: ["br", "tr"],
+            all: ["tl", "bl", "tr", "br", "l", "r"]
         },
 
         // Display values
-        displays = ['single', 'double'],
+        displays = ["single", "double"],
 
         // Direction values
-        directions = ['ltr', 'rtl'],
+        directions = ["ltr", "rtl"],
 
         // Default options
         turnOptions = {
@@ -57,7 +59,7 @@
             acceleration: true,
 
             // Display
-            display: 'double',
+            display: "double",
 
             // Duration of transition in milliseconds
             duration: 600,
@@ -69,7 +71,7 @@
             gradients: true,
 
             // Corners used when turning the page
-            turnCorners: 'bl,br',
+            turnCorners: "bl,br",
 
             // Events
             when: null
@@ -126,10 +128,13 @@
 
 
                 // Add event listeners
-                if (options.when)
-                    for (i in options.when)
-                        if (has(i, options.when))
-                            this.bind(i, options.when[i]);
+                if (options.when) {
+                    for (i in options.when) {
+                        if (has(i, options.when)) {
+                            this.on(i, options.when[i]);
+                        }
+                    }
+                }
 
                 // Set the css
                 this.css({
@@ -159,15 +164,15 @@
                 }
 
                 // Event listeners
-                $(this).bind(mouseEvents.down, data.eventHandlers.touchStart).
+                $(this).on(mouseEvents.down, data.eventHandlers.touchStart).
                 bind('end', turnMethods._eventEnd).
                 bind('pressed', turnMethods._eventPressed).
                 bind('released', turnMethods._eventReleased).
                 bind('flip', turnMethods._flip);
 
-                $(this).parent().bind('start', data.eventHandlers.start);
+                $(this).parent().on('start', data.eventHandlers.start);
 
-                $(document).bind(mouseEvents.move, data.eventHandlers.touchMove).
+                $(document).on(mouseEvents.move, data.eventHandlers.touchMove).
                 bind(mouseEvents.up, data.eventHandlers.touchEnd);
 
                 // Set the initial page
@@ -237,7 +242,9 @@
                     }).
                     addClass('page p' + page + className);
 
-                    if (!hasHardPage() && data.pageObjs[page].hasClass('hard')) {
+                    // Checks if there's hard page compatibility
+                    // IE9 is the only browser that does not support hard pages
+                    if (!(navigator.userAgent.indexOf('MSIE 9.0') == -1) && data.pageObjs[page].hasClass('hard')) {
                         data.pageObjs[page].removeClass('hard');
                     }
 
@@ -252,7 +259,6 @@
             },
 
             // Adds a page
-
             _addPage: function(page) {
 
                 var data = this.data(),
@@ -317,9 +323,7 @@
             // Checks if a page is in memory
 
             hasPage: function(page) {
-
                 return has(page, this.data().pageObjs);
-
             },
 
             // Centers the flipbook
@@ -376,12 +380,12 @@
                 data.destroying = true;
 
                 $.each(events, function(index, eventName) {
-                    flipbook.unbind(eventName);
+                    flipbook.off(eventName);
                 });
 
-                this.parent().unbind('start', data.eventHandlers.start);
+                this.parent().off('start', data.eventHandlers.start);
 
-                $(document).unbind(mouseEvents.move, data.eventHandlers.touchMove).
+                $(document).off(mouseEvents.move, data.eventHandlers.touchMove).
                 unbind(mouseEvents.up, data.eventHandlers.touchEnd);
 
                 while (data.totalPages !== 0) {
@@ -1867,7 +1871,7 @@
                     if (options.when)
                         for (var eventName in options.when)
                             if (has(eventName, options.when)) {
-                                this.unbind(eventName).
+                                this.off(eventName).
                                 bind(eventName, options.when[eventName]);
                             }
 
@@ -1886,11 +1890,9 @@
         },
 
         // Methods and properties for the flip page effect
-
         flipMethods = {
 
             // Constructor
-
             init: function(opts) {
 
                 this.data({
@@ -1954,9 +1956,7 @@
 
                 if (data.effect == 'hard') {
 
-                    return (turnData.direction == 'ltr') ?
-                        [(odd) ? 'r' : 'l'] :
-                        [(odd) ? 'l' : 'r'];
+                    return (turnData.direction == 'ltr') ? [(odd) ? 'r' : 'l'] : [(odd) ? 'l' : 'r'];
 
                 } else {
 
@@ -2099,7 +2099,7 @@
                 var opts = data.opts;
 
                 if (opts.turn) {
-                    data = opts.turn.data();
+                    data = opts.turn.ds.turn.data();
                     if (data.display == 'single')
                         return (opts.next > 1 || opts.page > 1) ? data.pageObjs[0] : null;
                     else
@@ -3119,7 +3119,6 @@
 
 
     // Attributes for a layer
-
     function divAtt(top, left, zIndex, overf) {
 
         return {
@@ -3206,9 +3205,7 @@
     // Checks if a property belongs to an object
 
     function has(property, object) {
-
         return Object.prototype.hasOwnProperty.call(object, property);
-
     }
 
     // Gets the CSS3 vendor prefix
@@ -3249,7 +3246,6 @@
     }
 
     // Gradients
-
     function gradient(obj, p0, p1, colors, numColors) {
 
         var j, cols = [];
@@ -3346,12 +3342,6 @@
 
         return offset;
 
-    }
-
-    // Checks if there's hard page compatibility
-    // IE9 is the only browser that does not support hard pages
-    function hasHardPage() {
-        return (navigator.userAgent.indexOf('MSIE 9.0') == -1);
     }
 
     // Request an animation
