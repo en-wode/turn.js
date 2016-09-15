@@ -18,14 +18,15 @@ body {
 .magazine-viewport .container {}
 
 .magazine-viewport .magazine {
+    position: relative;
     overflow: visible;
     margin: 0 auto !important;
     height: 600px
 }
 
 .magazine-viewport .magazine .page-wrapper {
-    width: 50%!important;
-    height: 100%!important;
+    width: 50% !important;
+    height: 100% !important;
     position: absolute;
     overflow: hidden;
     top: 0;
@@ -146,8 +147,9 @@ body {
     width: 22px;
     height: 22px;
     position: absolute;
-    top: 280px;
-    left: 219px;
+    top: 50%;
+    left: 50%;
+    margin: -11px 0 0 -11px;
 }
 
 .magazine-viewport .shadow {
