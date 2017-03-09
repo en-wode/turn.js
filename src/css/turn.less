@@ -1,0 +1,94 @@
+body {
+    overflow-x: hidden;
+    overflow-y: visible;
+    max-width: 100%;
+    width: 100%;
+}
+
+#canvas {
+    width: 100%;
+    display: block;
+}
+
+.magazine-viewport {
+    overflow: visible!important;
+    z-index: 1;
+    
+    .magazine {
+        position: relative;
+        overflow: visible;
+        margin: 0 auto !important;
+        height: 600px;
+
+        .page-wrapper {
+            width: 50% !important;
+            height: 100% !important;
+            position: absolute;
+            overflow: hidden;
+            top: 0;
+            bottom: 0;
+            left: auto;
+            right: auto;
+            z-index: 11;
+
+            .gradient {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+            }
+
+            &.even {
+
+                left: 0;
+
+                .gradient {
+                    background-image: linear-gradient(left, rgba(0, 0, 0, 0) 95%, rgba(0, 0, 0, 0.2) 100%);
+                }
+
+            }
+
+            &.odd {
+
+                right: 0;
+
+                .gradient {
+                    background-image: linear-gradient(right, rgba(0, 0, 0, 0) 95%, rgba(0, 0, 0, 0.15) 100%);
+                }
+
+            }
+
+        }
+
+        .page {
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: #e4e4cd;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+
+            &>img {
+                user-select: none;
+                margin: 0;
+                width: 100%;
+                height: 100%;
+            }
+        }
+    }
+
+}
+
+.animated {
+    -webkit-transition: margin-left 0.5s;
+    -moz-transition: margin-left 0.5s;
+    -o-transition: margin-left 0.5s;
+    transition: margin-left 0.5s;
+}
+
+.bottom {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+}
