@@ -2,6 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="utf-8">
+    <link rel="preload" href="../src/xss/turn.css" as="style">
 </head>
 <body>
 
@@ -17,7 +18,16 @@
 
                 <div class="demo-viewport">
 
-                    <div class="turn"></div>
+                    <div class="turn">
+                        <img src="http://placehold.it/400x500?text=Book+-+Cover">
+                        <img src="http://placehold.it/400x500?text=Back+Cover">
+                        <img src="http://placehold.it/400x500?text=Start">
+                        <img src="http://placehold.it/400x500?text=02">
+                        <img src="http://placehold.it/400x500?text=03">
+                        <img src="http://placehold.it/400x500?text=04">
+                        <img src="http://placehold.it/400x500?text=05">
+                        <img src="http://placehold.it/400x500?text=End+-+Cover">
+                    </div>
 
                 </div>
 
@@ -27,11 +37,9 @@
 
     </main>
 
+    <script src="../node_modules/jquery/dist/jquery.min.js" charset="utf-8"></script>
     <script type="text/javascript" src="../src/js/turn.js"></script>
     <script type="text/javascript">
-
-    include.css('../src/plugin/turn/turnjs/styles/turn.css');
-    include.css('../src/plugin/owl-carousel/owl.carousel.min.css');
 
     function loadApp() {
 
@@ -65,7 +73,7 @@
 
             sourceFolder: undefined,
 
-            when: { 
+            when: {
                 // Events
                 turned: function (event, page, view) {
 
