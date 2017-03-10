@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+
+    <main>
+
+        <section>
+
+            <header class="section-header">
+                <h1>Flipbook</h1>
+            </header>
+
+            <div id="canvas">
+
+                <div class="demo-viewport">
+
+                    <div class="turn"></div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script type="text/javascript" src="../src/js/turn.js"></script>
+    <script type="text/javascript">
+
+    include.css('../src/plugin/turn/turnjs/styles/turn.css');
+    include.css('../src/plugin/owl-carousel/owl.carousel.min.css');
+
+    function loadApp() {
+
+        window.$flipbook = $('.turn');
+
+        var flag = false;
+
+        // Check if the CSS was already loaded
+
+        if ($flipbook.width() == 0 || $flipbook.height() == 0) {
+            setTimeout(loadApp, 10);
+            return;
+        }
+
+        // Create the $flipbook
+        $flipbook.turn({
+
+            width: '400', // flipbook width
+
+            height:  '400', // flipbook height
+
+            duration: 800, // Duration in millisecond
+
+            gradients: true, // Enables gradients
+
+            autoCenter: true, // Auto center this $flipbook
+
+            elevation: 50, // Elevation from the edge of the $flipbook when turning a page
+
+            pages: undefined, // The number of pages
+
+            sourceFolder: undefined,
+
+            when: { 
+                // Events
+                turned: function (event, page, view) {
+
+                    if (page == 1) {
+                        $(this).turn('peel', 'br');
+                    }
+
+                },
+                missing: function (event, pages) {
+
+                    // Add pages that aren't in the flipbook
+                    for (var i = 0; i < pages.length; i++) {
+                        $(this).turn('addPage', pages[i]);
+                    }
+                }
+            }
+
+        });
+    }
+
+    loadApp();
+
+    </script>
+    <!-- /eps -->
+</body>
+</html>
