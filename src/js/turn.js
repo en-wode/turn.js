@@ -1,16 +1,8 @@
 /**
- * turn.js 4th release
- * turnjs.com
- * @license turnjs.com/license.txt
- *
  * @author Emmanuel Garcia
  * @author Jonas Orrico
  * @author Luiz Filipe Machado Barni @odahcam
- *
- * @copyright 2012 Emmanuel Garcia - All rights reserved
  */
-
-;
 (function ($, window, document, undefined) {
 
     "use strict";
@@ -29,12 +21,12 @@
             over: 'touchstart',
             out: 'touchend'
         } : { // notTouch
-            down: 'mousedown',
-            move: 'mousemove',
-            up: 'mouseup',
-            over: 'mouseover',
-            out: 'mouseout'
-        },
+                down: 'mousedown',
+                move: 'mousemove',
+                up: 'mouseup',
+                over: 'mouseover',
+                out: 'mouseout'
+            },
         resizeTimeoutID,
 
         /*
@@ -84,7 +76,7 @@
             gradients: true,
 
             // Corners used when turning the page, use only 2 values
-            turnCorners: ['bl','br'],
+            turnCorners: ['bl', 'br'],
 
             // The pages source folder
             sourceFolder: '',
@@ -114,12 +106,15 @@
                 // Define constants
                 has3d = 'WebKitCSSMatrix' in window || 'MozPerspective' in document.body.style;
                 hasRot = rotationAvailable();
-                vendor = getPrefix();
+                vendor = getCSSVendorPrefix();
 
                 var i,
                     pageNum = 0,
+                    // $elem = this.wrapInner('<div class="turn-container">').children(),
+                    // $wrapper = this,
+                    // should not add any content to outside of the given element
                     $elem = this,
-                    $wrapper = $elem.wrap('<div class="turn-container">').parent(),
+                    $wrapper = $elem.wrapInner('<div class="turn-container">').parent(),
                     $children = $elem.children(),
                     data = $elem.data();
 
@@ -128,11 +123,11 @@
                     width: $elem.width(),
                     height: $elem.height()
                 }, turnOptions, {
-                    direction: $elem.css('direction') // CSS direction
-                }, options, {
-                    $elem: $elem,
-                    elem: $elem[0]
-                });
+                        direction: $elem.css('direction') // CSS direction
+                    }, options, {
+                        $elem: $elem,
+                        elem: $elem[0]
+                    });
 
                 $.extend(data, {
                     options: options,
@@ -230,7 +225,7 @@
                     if (page == lastPage)
                         incPages = true;
                     else if (page > lastPage)
-                        throw new turnError('Page "' + page + '" could not be inserted.');
+                        throw new Error('Page "' + page + '" could not be inserted.');
 
                 } else {
 
@@ -239,12 +234,13 @@
 
                 }
 
-                if (page >= 1 && page <= lastPage) {
+                if (page > 0 && page <= lastPage) {
 
-                    if (data.display == 'double')
+                    if (data.display == 'double') {
                         parity = (page % 2) ? ' odd' : ' even';
-                    else
+                    } else {
                         parity = '';
+                    }
 
                     // Stop animations
                     if (data.done)
@@ -265,7 +261,7 @@
 
                     // Checks if there's hard page compatibility
                     // IE9 is the only browser that does not support hard pages
-                    if (!(navigator.userAgent.indexOf('MSIE 9.0') == -1) && data.pageObjs[page].hasClass('hard')) {
+                    if (navigator.userAgent.indexOf('MSIE 9.0') !== -1 && data.pageObjs[page].hasClass('hard')) {
                         data.pageObjs[page].removeClass('hard');
                     }
 
@@ -360,13 +356,13 @@
                     // waits for load
                     .on('load', function () {
                         $page
-                        // Add the image to the page after loaded
+                            // Add the image to the page after loaded
                             .append(this)
                             // Remove the loader indicator
                             .find('.loader').remove();
                     })
-                    // starts to load
-                    [0].src = this.data().options.sourceFolder + (page + 1000) + '.jpg';
+                // starts to load
+                [0].src = this.data().options.sourceFolder + (page + 1000) + '.jpg';
 
             },
 
@@ -472,7 +468,7 @@
                 if (typeof (newZoom) == 'number') {
 
                     if (newZoom < 0.001 || newZoom > 100)
-                        throw new turnError('"' + newZoom + '" is not a value for zoom.');
+                        throw new Error('"' + newZoom + '" is not a value for zoom.');
 
                     if (trigger('zooming', this, [newZoom, data.zoom]) == 'prevented')
                         return this;
@@ -649,7 +645,7 @@
                 view = turnMethods._view.call(this, page);
 
                 if (page < 1 || page > data.totalPages)
-                    throw new turnError('The page "' + page + '" is not valid.');
+                    throw new Error('The page "' + page + '" is not valid.');
 
 
                 view[1] = view[1] || view[0];
@@ -672,7 +668,7 @@
                 }
 
                 return [Math.max(1, view[0] - left),
-                    Math.min(data.totalPages, view[1] + right)
+                Math.min(data.totalPages, view[1] + right)
                 ];
 
             },
@@ -697,11 +693,11 @@
 
                 var page, data = this.data();
 
-                for (page in data.pageWrap)
-                    if (has(page, data.pageWrap) &&
-                        !turnMethods._necessPage.call(this, page))
+                for (page in data.pageWrap) {
+                    if (has(page, data.pageWrap) && !turnMethods._necessPage.call(this, page)) {
                         turnMethods._removePageFromDOM.call(this, page);
-
+                    }
+                }
             },
 
             // Removes a page from DOM and its internal references
@@ -754,7 +750,7 @@
                 } else {
 
                     if (page < 1 || page > data.totalPages)
-                        throw new turnError('The page "' + page + '" doesn\'t exist.');
+                        throw new Error('The page "' + page + '" doesn\'t exist.');
 
                     if (data.pageObjs[page]) {
 
@@ -859,42 +855,42 @@
                 } else {
 
                     if ($.inArray(display, displays) == -1)
-                        throw new turnError('"' + display + '" is not a value for display.');
+                        throw new Error('"' + display + '" is not a value for display.');
 
                     switch (display) {
-                    case 'single':
+                        case 'single':
 
-                        // Create a temporal page to use as folded page
+                            // Create a temporal page to use as folded page
 
-                        if (!data.pageObjs[0]) {
-                            this.turn('stop').css('overflow', 'hidden');
+                            if (!data.pageObjs[0]) {
+                                this.turn('stop').css('overflow', 'hidden');
 
-                            data.pageObjs[0] = $('<div>')
-                                .addClass('page p-temporal')
-                                .css({
-                                    width: this.width(),
-                                    height: this.height()
-                                })
-                                .appendTo(this);
-                        }
+                                data.pageObjs[0] = $('<div>')
+                                    .addClass('page p-temporal')
+                                    .css({
+                                        width: this.width(),
+                                        height: this.height()
+                                    })
+                                    .appendTo(this);
+                            }
 
-                        this.addClass('shadow');
+                            this.addClass('shadow');
 
-                        break;
-                    case 'double':
+                            break;
+                        case 'double':
 
-                        // Remove the temporal page
+                            // Remove the temporal page
 
-                        if (data.pageObjs[0]) {
-                            this.turn('stop')
-                                .css('overflow', '');
-                            data.pageObjs[0].remove();
-                            delete data.pageObjs[0];
-                        }
+                            if (data.pageObjs[0]) {
+                                this.turn('stop')
+                                    .css('overflow', '');
+                                data.pageObjs[0].remove();
+                                delete data.pageObjs[0];
+                            }
 
-                        this.removeClass('shadow');
+                            this.removeClass('shadow');
 
-                        break;
+                            break;
                     }
 
 
@@ -928,7 +924,7 @@
                     dir = dir.toLowerCase();
 
                     if ($.inArray(dir, directions) == -1)
-                        throw new turnError('"' + dir + '" is not a valid direction.');
+                        throw new Error('"' + dir + '" is not a valid direction.');
 
                     if (dir == 'rtl') {
                         this.attr('dir', 'ltr')
@@ -940,7 +936,7 @@
                     if (data.done)
                         this.turn('size', $(this)
                             .width(), $(this)
-                            .height());
+                                .height());
 
                     return this;
                 }
@@ -1143,7 +1139,7 @@
 
                 if (data.display == 'double')
                     return [(view[0] > 0) ? view[0] : 0,
-                        (view[1] <= data.totalPages) ? view[1] : 0
+                    (view[1] <= data.totalPages) ? view[1] : 0
                     ];
                 else
                     return [(view[0] > 0 && view[0] <= data.totalPages) ? view[0] : 0];
@@ -1161,7 +1157,7 @@
 
                     if (data.tpage) {
                         data.page = data.tpage;
-                        delete data['tpage'];
+                        delete data.tpage;
                     }
 
                     for (i = 0; i < data.pageMv.length; i++) {
@@ -1179,7 +1175,7 @@
 
                         if (options.force) {
                             options.next = (options.page % 2 === 0) ? options.page - 1 : options.page + 1;
-                            delete options['force'];
+                            delete options.force;
                         }
 
                     }
@@ -1398,7 +1394,7 @@
 
                         } else {
 
-                            throw new turnError('The page "' + page + '" does not exist.');
+                            throw new Error('The page "' + page + '" does not exist.');
 
                         }
 
@@ -1417,7 +1413,7 @@
                     .totalPages,
                     turnMethods._view.call(this, this.data()
                         .page)
-                    .pop() + 1));
+                        .pop() + 1));
 
             },
 
@@ -1429,7 +1425,7 @@
                 return this.turn('page', Math.max(1,
                     turnMethods._view.call(this, this.data()
                         .page)
-                    .shift() - 1));
+                        .shift() - 1));
 
             },
 
@@ -1577,8 +1573,9 @@
 
                 turn.turn('update');
 
-                return data.time = new Date()
-                    .getTime();
+                data.time = +new Date();
+
+                return data.time;
 
             },
 
@@ -1734,10 +1731,10 @@
                         data.pageWrap[page].css({
                             display: (pos.pageV[page] || fixed) ? '' : 'none',
                             zIndex:
-                                (data.pageObjs[page].hasClass('hard') ?
-                                    pos.partZ[page] :
-                                    pos.pageZ[page]
-                                ) || (fixed ? -1 : 0)
+                            (data.pageObjs[page].hasClass('hard') ?
+                                pos.partZ[page] :
+                                pos.pageZ[page]
+                            ) || (fixed ? -1 : 0)
                         });
 
                         if ((p = data.pages[page])) {
@@ -1751,9 +1748,9 @@
 
                                 p.flip('hover', false)
                                     .flip('disable',
-                                        $.inArray(parseInt(page, 10), data.pageMv) == -1 &&
-                                        page != newView[0] &&
-                                        page != newView[1]);
+                                    $.inArray(parseInt(page, 10), data.pageMv) == -1 &&
+                                    page != newView[0] &&
+                                    page != newView[1]);
 
                             } else {
 
@@ -1827,30 +1824,30 @@
                     shadow = 3;
 
                 switch (shadow) {
-                case 1:
-                    data.shadow.css({
-                        width: pageWidth,
-                        height: height,
-                        top: 0,
-                        left: pageWidth
-                    });
-                    break;
-                case 2:
-                    data.shadow.css({
-                        width: pageWidth,
-                        height: height,
-                        top: 0,
-                        left: 0
-                    });
-                    break;
-                case 3:
-                    data.shadow.css({
-                        width: width,
-                        height: height,
-                        top: 0,
-                        left: 0
-                    });
-                    break;
+                    case 1:
+                        data.shadow.css({
+                            width: pageWidth,
+                            height: height,
+                            top: 0,
+                            left: pageWidth
+                        });
+                        break;
+                    case 2:
+                        data.shadow.css({
+                            width: pageWidth,
+                            height: height,
+                            top: 0,
+                            left: 0
+                        });
+                        break;
+                    case 3:
+                        data.shadow.css({
+                            width: width,
+                            height: height,
+                            top: 0,
+                            left: 0
+                        });
+                        break;
                 }
 
             },
@@ -1875,24 +1872,24 @@
 
                 if (!this.turn('animating'))
                     switch (loc) {
-                    case 1:
-                        data.pageWrap[page].css({
-                            zIndex: data.totalPages,
-                            display: ''
-                        });
-                        break;
-                    case 2:
-                        data.pageWrap[page].css({
-                            zIndex: data.totalPages - 1,
-                            display: ''
-                        });
-                        break;
-                    case 0:
-                        data.pageWrap[page].css({
-                            zIndex: 0,
-                            display: (data.pageObjs[page].hasClass('fixed')) ? '' : 'none'
-                        });
-                        break;
+                        case 1:
+                            data.pageWrap[page].css({
+                                zIndex: data.totalPages,
+                                display: ''
+                            });
+                            break;
+                        case 2:
+                            data.pageWrap[page].css({
+                                zIndex: data.totalPages - 1,
+                                display: ''
+                            });
+                            break;
+                        case 0:
+                            data.pageWrap[page].css({
+                                zIndex: 0,
+                                display: (data.pageObjs[page].hasClass('fixed')) ? '' : 'none'
+                            });
+                            break;
                     }
 
                 return loc;
@@ -1959,64 +1956,64 @@
 
             resizeViewport: function () {
 
-                    // Calculate the width and height of a square within another
-                    // Calcula a largura e altura de um quadrado dentro de outro
-                    // width / height = proportion (proportion > 1 == landscape; proportion < 1 == portrait; proportion === 1 == square)
-                    function calculateBound(d) {
+                // Calculate the width and height of a square within another
+                // Calcula a largura e altura de um quadrado dentro de outro
+                // width / height = proportion (proportion > 1 == landscape; proportion < 1 == portrait; proportion === 1 == square)
+                function calculateBound(d) {
 
-                        var bound = {
-                            width: d.width,
-                            height: d.height
-                        };
+                    var bound = {
+                        width: d.width,
+                        height: d.height
+                    };
 
-                        if (bound.width > d.boundWidth || bound.height > d.boundHeight) {
+                    if (bound.width > d.boundWidth || bound.height > d.boundHeight) {
 
-                            var rel = bound.width / bound.height;
+                        var rel = bound.width / bound.height;
 
-                            if (d.boundWidth / rel > d.boundHeight && d.boundHeight * rel <= d.boundWidth) {
+                        if (d.boundWidth / rel > d.boundHeight && d.boundHeight * rel <= d.boundWidth) {
 
-                                bound.width = Math.round(d.boundHeight * rel);
-                                bound.height = d.boundHeight;
+                            bound.width = Math.round(d.boundHeight * rel);
+                            bound.height = d.boundHeight;
 
-                            } else {
+                        } else {
 
-                                bound.width = d.boundWidth;
-                                bound.height = Math.round(d.boundWidth / rel);
+                            bound.width = d.boundWidth;
+                            bound.height = Math.round(d.boundWidth / rel);
 
-                            }
                         }
-
-                        return bound;
                     }
 
-                    var windowWidth = $(window).width(),
-                        windowHeight = $(window).height(),
-                        options = this.data().options;
+                    return bound;
+                }
 
-                    this.css({
-                        width: windowWidth * 0.9,
-                        height: windowHeight * 0.9
-                    });
+                var windowWidth = $(window).width(),
+                    windowHeight = $(window).height(),
+                    options = this.data().options;
 
-                    console.log(options.$elem);
+                this.css({
+                    width: windowWidth * 0.9,
+                    height: windowHeight * 0.9
+                });
 
-                    var bound = calculateBound({
-                        width: options.width,
-                        height: options.height,
-                        boundWidth: Math.min(options.width, windowWidth),
-                        boundHeight: Math.min(options.height, windowHeight)
-                    });
+                console.log(options.$elem);
 
-                    options.$elem.turn('size', Math.floor(bound.width * 0.9), Math.floor(bound.height * 0.9));
+                var bound = calculateBound({
+                    width: options.width,
+                    height: options.height,
+                    boundWidth: Math.min(options.width, windowWidth),
+                    boundHeight: Math.min(options.height, windowHeight)
+                });
 
-                    if (options.$elem.turn('page') == 1)
-                        options.$elem.turn('peel', 'br');
+                options.$elem.turn('size', Math.floor(bound.width * 0.9), Math.floor(bound.height * 0.9));
 
-                    if (bound.width != this.width() || bound.height != this.height()) {
-                        this.turn('size', Math.floor(bound.width * 0.9), Math.floor(bound.height * 0.9));
-                    }
+                if (options.$elem.turn('page') == 1)
+                    options.$elem.turn('peel', 'br');
 
-                } // /resizeViewport
+                if (bound.width != this.width() || bound.height != this.height()) {
+                    this.turn('size', Math.floor(bound.width * 0.9), Math.floor(bound.height * 0.9));
+                }
+
+            } // /resizeViewport
         },
 
         // Methods and properties for the flip page effect
@@ -2084,11 +2081,11 @@
                     .f,
                     page = data.options.page,
                     turnData = data.options.turn.data(),
-                    odd = page % 2;
+                    isOdd = page % 2 > 0;
 
                 if (data.effect == 'hard') {
 
-                    return (turnData.direction == 'ltr') ? [(odd) ? 'r' : 'l'] : [(odd) ? 'l' : 'r'];
+                    return (turnData.direction == 'ltr') ? [isOdd ? 'r' : 'l'] : [isOdd ? 'l' : 'r'];
 
                 } else {
 
@@ -2096,18 +2093,18 @@
 
                         if (page == 1)
                             return (turnData.direction == 'ltr') ?
-                                corners['forward'] : corners['backward'];
+                                corners.forward : corners.backward;
                         else if (page == turnData.totalPages)
                             return (turnData.direction == 'ltr') ?
-                                corners['backward'] : corners['forward'];
+                                corners.backward : corners.forward;
                         else
-                            return corners['all'];
+                            return corners.all;
 
                     } else {
 
                         return (turnData.direction == 'ltr') ?
-                            corners[(odd) ? 'forward' : 'backward'] :
-                            corners[(odd) ? 'backward' : 'forward'];
+                            corners[isOdd ? 'forward' : 'backward'] :
+                            corners[isOdd ? 'backward' : 'forward'];
 
                     }
 
@@ -2134,34 +2131,34 @@
                 var allowedCorners = flipMethods._cAllowed.call(this);
 
                 switch (data.effect) {
-                case 'hard':
+                    case 'hard':
 
-                    if (point.x > width - csz)
-                        point.corner = 'r';
-                    else if (point.x < csz)
-                        point.corner = 'l';
-                    else
-                        return false;
+                        if (point.x > width - csz)
+                            point.corner = 'r';
+                        else if (point.x < csz)
+                            point.corner = 'l';
+                        else
+                            return false;
 
-                    break;
+                        break;
 
-                case 'sheet':
+                    case 'sheet':
 
-                    if (point.y < csz)
-                        point.corner += 't';
-                    else if (point.y >= height - csz)
-                        point.corner += 'b';
-                    else
-                        return false;
+                        if (point.y < csz)
+                            point.corner += 't';
+                        else if (point.y >= height - csz)
+                            point.corner += 'b';
+                        else
+                            return false;
 
-                    if (point.x <= csz)
-                        point.corner += 'l';
-                    else if (point.x >= width - csz)
-                        point.corner += 'r';
-                    else
-                        return false;
+                        if (point.x <= csz)
+                            point.corner += 'l';
+                        else if (point.x >= width - csz)
+                            point.corner += 'r';
+                        else
+                            return false;
 
-                    break;
+                        break;
                 }
 
                 return (!point.corner || $.inArray(point.corner, allowedCorners) == -1) ?
@@ -2188,18 +2185,18 @@
                 options = options || 0;
 
                 switch (corner) {
-                case 'tl':
-                    return point2D(options, options);
-                case 'tr':
-                    return point2D(this.width() - options, options);
-                case 'bl':
-                    return point2D(options, this.height() - options);
-                case 'br':
-                    return point2D(this.width() - options, this.height() - options);
-                case 'l':
-                    return point2D(options, 0);
-                case 'r':
-                    return point2D(this.width() - options, 0);
+                    case 'tl':
+                        return point2D(options, options);
+                    case 'tr':
+                        return point2D(this.width() - options, options);
+                    case 'bl':
+                        return point2D(options, this.height() - options);
+                    case 'br':
+                        return point2D(this.width() - options, this.height() - options);
+                    case 'l':
+                        return point2D(options, 0);
+                    case 'r':
+                        return point2D(this.width() - options, 0);
                 }
 
             },
@@ -2207,18 +2204,18 @@
             _c2: function (corner) {
 
                 switch (corner) {
-                case 'tl':
-                    return point2D(this.width() * 2, 0);
-                case 'tr':
-                    return point2D(-this.width(), 0);
-                case 'bl':
-                    return point2D(this.width() * 2, this.height());
-                case 'br':
-                    return point2D(-this.width(), this.height());
-                case 'l':
-                    return point2D(this.width() * 2, 0);
-                case 'r':
-                    return point2D(-this.width(), 0);
+                    case 'tl':
+                        return point2D(this.width() * 2, 0);
+                    case 'tr':
+                        return point2D(-this.width(), 0);
+                    case 'bl':
+                        return point2D(this.width() * 2, this.height());
+                    case 'br':
+                        return point2D(-this.width(), this.height());
+                    case 'l':
+                        return point2D(this.width() * 2, 0);
+                    case 'r':
+                        return point2D(-this.width(), 0);
                 }
 
             },
@@ -2280,94 +2277,94 @@
                     height = this.height();
 
                 switch (data.effect) {
-                case 'hard':
+                    case 'hard':
 
-                    if (full) {
-                        data.wrapper.css({
-                            width: width,
-                            height: height
-                        });
-                        data.fpage.css({
-                            width: width,
-                            height: height
-                        });
-                        if (turnData.options.gradients) {
-                            data.ashadow.css({
+                        if (full) {
+                            data.wrapper.css({
                                 width: width,
                                 height: height
                             });
-                            data.bshadow.css({
+                            data.fpage.css({
                                 width: width,
                                 height: height
                             });
+                            if (turnData.options.gradients) {
+                                data.ashadow.css({
+                                    width: width,
+                                    height: height
+                                });
+                                data.bshadow.css({
+                                    width: width,
+                                    height: height
+                                });
+                            }
                         }
-                    }
 
-                    break;
-                case 'sheet':
+                        break;
+                    case 'sheet':
 
-                    if (full) {
-                        var size = Math.round(Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2)));
+                        if (full) {
+                            var size = Math.round(Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2)));
 
-                        data.wrapper
-                            .css({
-                                width: size,
-                                height: size
+                            data.wrapper
+                                .css({
+                                    width: size,
+                                    height: size
+                                });
+                            data.fwrapper
+                                .css({
+                                    width: size,
+                                    height: size
+                                })
+                                .children(':first-child')
+                                .css({
+                                    width: width,
+                                    height: height
+                                });
+
+                            data.fpage
+                                .css({
+                                    width: width,
+                                    height: height
+                                });
+
+                            if (turnData.options.gradients)
+                                data.ashadow.css({
+                                    width: width,
+                                    height: height
+                                });
+
+                            if (flipMethods._backGradient.call(this))
+                                data.bshadow.css({
+                                    width: width,
+                                    height: height
+                                });
+                        }
+
+                        if (data.parent.is(':visible')) {
+
+                            var offset = data.parent.offset();
+
+                            console.log(data.fwrapper);
+                            console.log(offset);
+
+                            data.fwrapper.css({
+                                top: offset.top,
+                                left: offset.left
                             });
-                        data.fwrapper
-                            .css({
-                                width: size,
-                                height: size
-                            })
-                            .children(':first-child')
-                            .css({
-                                width: width,
-                                height: height
+
+                            //if (data.options.turn) {
+                            offset = data.options.turn.offset();
+                            data.fparent.css({
+                                top: -offset.top,
+                                left: -offset.left
                             });
+                            //}
+                        }
 
-                        data.fpage
-                            .css({
-                                width: width,
-                                height: height
-                            });
+                        this.flip('z', data.options['z-index']);
 
-                        if (turnData.options.gradients)
-                            data.ashadow.css({
-                                width: width,
-                                height: height
-                            });
-
-                        if (flipMethods._backGradient.call(this))
-                            data.bshadow.css({
-                                width: width,
-                                height: height
-                            });
-                    }
-
-                    if (data.parent.is(':visible')) {
-
-                        var offset = data.parent.offset();
-
-                        console.log(data.fwrapper);
-                        console.log(offset);
-
-                        data.fwrapper.css({
-                            top: offset.top,
-                            left: offset.left
-                        });
-
-                        //if (data.options.turn) {
-                        offset = data.options.turn.offset();
-                        data.fparent.css({
-                            top: -offset.top,
-                            left: -offset.left
-                        });
-                        //}
-                    }
-
-                    this.flip('z', data.options['z-index']);
-
-                    break;
+                        break;
                 }
 
             },
@@ -2385,88 +2382,88 @@
 
                 if (!data.wrapper)
                     switch (data.effect) {
-                    case 'hard':
+                        case 'hard':
 
-                        var cssProperties = {};
-                        cssProperties[vendor + 'transform-style'] = 'preserve-3d';
-                        cssProperties[vendor + 'backface-visibility'] = 'hidden';
+                            var cssProperties = {};
+                            cssProperties[vendor + 'transform-style'] = 'preserve-3d';
+                            cssProperties[vendor + 'backface-visibility'] = 'hidden';
 
-                        data.wrapper = $('<div>', divStyle(0, 0, 2))
-                            .css(cssProperties)
-                            .appendTo(parent)
-                            .prepend(this);
+                            data.wrapper = $('<div>', divStyle(0, 0, 2))
+                                .css(cssProperties)
+                                .appendTo(parent)
+                                .prepend(this);
 
-                        data.fpage = $('<div>', divStyle(0, 0, 1))
-                            .css(cssProperties)
-                            .appendTo(parent);
-
-                        if (turnData.options.gradients) {
-                            data.ashadow = $('<div>', divStyle(0, 0, 0))
-                                .hide()
+                            data.fpage = $('<div>', divStyle(0, 0, 1))
+                                .css(cssProperties)
                                 .appendTo(parent);
 
-                            data.bshadow = $('<div>', divStyle(0, 0, 0));
-                        }
+                            if (turnData.options.gradients) {
+                                data.ashadow = $('<div>', divStyle(0, 0, 0))
+                                    .hide()
+                                    .appendTo(parent);
 
-                        break;
-                    case 'sheet':
+                                data.bshadow = $('<div>', divStyle(0, 0, 0));
+                            }
 
-                        var width = this.width(),
-                            height = this.height(),
-                            size = Math.round(Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2)));
+                            break;
+                        case 'sheet':
 
-                        data.fparent = data.options.turn.data()
-                            .fparent;
+                            var width = this.width(),
+                                height = this.height(),
+                                size = Math.round(Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2)));
 
-                        if (!data.fparent) {
-                            var fparent = $('<div>', {
+                            data.fparent = data.options.turn.data()
+                                .fparent;
+
+                            if (!data.fparent) {
+                                var fparent = $('<div>', {
                                     css: {
                                         'pointer-events': 'none'
                                     }
                                 })
-                                .hide();
-                            fparent.data()
-                                .flips = 0;
-                            fparent.css(divStyle(0, 0, 'auto', 'visible')
+                                    .hide();
+                                fparent.data()
+                                    .flips = 0;
+                                fparent.css(divStyle(0, 0, 'auto', 'visible')
                                     .css)
-                                .appendTo(data.options.turn);
+                                    .appendTo(data.options.turn);
 
-                            data.options.turn.data()
-                                .fparent = fparent;
-                            data.fparent = fparent;
-                        }
+                                data.options.turn.data()
+                                    .fparent = fparent;
+                                data.fparent = fparent;
+                            }
 
-                        this.css({
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            bottom: 'auto',
-                            right: 'auto'
-                        });
+                            this.css({
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                bottom: 'auto',
+                                right: 'auto'
+                            });
 
-                        data.wrapper = $('<div>', divStyle(0, 0, this.css('z-index')))
-                            .appendTo(parent)
-                            .prepend(this);
+                            data.wrapper = $('<div>', divStyle(0, 0, this.css('z-index')))
+                                .appendTo(parent)
+                                .prepend(this);
 
-                        data.fwrapper = $('<div>', divStyle(parent.offset()
+                            data.fwrapper = $('<div>', divStyle(parent.offset()
                                 .top, parent.offset()
-                                .left))
-                            .hide()
-                            .appendTo(data.fparent);
+                                    .left))
+                                .hide()
+                                .appendTo(data.fparent);
 
-                        data.fpage = $('<div>', divStyle(0, 0, 0, 'visible'))
-                            .css({
-                                cursor: 'default'
-                            })
-                            .appendTo(data.fwrapper);
+                            data.fpage = $('<div>', divStyle(0, 0, 0, 'visible'))
+                                .css({
+                                    cursor: 'default'
+                                })
+                                .appendTo(data.fwrapper);
 
-                        if (turnData.options.gradients)
-                            data.ashadow = $('<div>', divStyle(0, 0, 1))
-                            .appendTo(data.fpage);
+                            if (turnData.options.gradients)
+                                data.ashadow = $('<div>', divStyle(0, 0, 1))
+                                    .appendTo(data.fpage);
 
-                        flipMethods.setData.call(this, data);
+                            flipMethods.setData.call(this, data);
 
-                        break;
+                            break;
                     }
 
                 // Set size
@@ -2487,329 +2484,329 @@
 
                 switch (data.effect) {
 
-                case 'hard':
+                    case 'hard':
 
-                    if (point.corner == 'l')
-                        point.x = Math.min(Math.max(point.x, 0), width * 2);
-                    else
-                        point.x = Math.max(Math.min(point.x, width), -width);
+                        if (point.corner == 'l')
+                            point.x = Math.min(Math.max(point.x, 0), width * 2);
+                        else
+                            point.x = Math.max(Math.min(point.x, width), -width);
 
-                    var leftPos,
-                        shadow,
-                        gradientX,
-                        fpageOrigin,
-                        parentOrigin,
-                        totalPages = turnData.totalPages,
-                        zIndex = data.options['z-index'] || totalPages,
-                        parentCss = {
-                            'overflow': 'visible'
-                        },
-                        relX = (o.x) ? (o.x - point.x) / width : point.x / width,
-                        angle = relX * 90,
-                        half = angle < 90;
+                        var leftPos,
+                            shadow,
+                            gradientX,
+                            fpageOrigin,
+                            parentOrigin,
+                            totalPages = turnData.totalPages,
+                            zIndex = data.options['z-index'] || totalPages,
+                            parentCss = {
+                                'overflow': 'visible'
+                            },
+                            relX = (o.x) ? (o.x - point.x) / width : point.x / width,
+                            angle = relX * 90,
+                            half = angle < 90;
 
-                    switch (point.corner) {
-                    case 'l':
+                        switch (point.corner) {
+                            case 'l':
 
-                        fpageOrigin = '0% 50%';
-                        parentOrigin = '100% 50%';
+                                fpageOrigin = '0% 50%';
+                                parentOrigin = '100% 50%';
+
+                                if (half) {
+                                    leftPos = 0;
+                                    shadow = data.options.next - 1 > 0;
+                                    gradientX = 1;
+                                } else {
+                                    leftPos = '100%';
+                                    shadow = data.options.page + 1 < totalPages;
+                                    gradientX = 0;
+                                }
+
+                                break;
+                            case 'r':
+
+                                fpageOrigin = '100% 50%';
+                                parentOrigin = '0% 50%';
+                                angle = -angle;
+                                width = -width;
+
+                                if (half) {
+                                    leftPos = 0;
+                                    shadow = data.options.next + 1 < totalPages;
+                                    gradientX = 0;
+                                } else {
+                                    leftPos = '-100%';
+                                    shadow = data.options.page != 1;
+                                    gradientX = 1;
+                                }
+
+                                break;
+                        }
+
+                        parentCss[vendor + 'perspective-origin'] = parentOrigin;
+
+                        data.wrapper.transform('rotateY(' + angle + 'deg) translate3d(0px, 0px, ' + this.attr('depth') || 0 + 'px)', parentOrigin);
+
+                        data.fpage.transform('translateX(' + width + 'px) rotateY(' + (180 + angle) + 'deg)', fpageOrigin);
+
+                        data.parent.css(parentCss);
 
                         if (half) {
-                            leftPos = 0;
-                            shadow = data.options.next - 1 > 0;
-                            gradientX = 1;
+                            relX = -relX + 1;
+                            data.wrapper.css({
+                                zIndex: zIndex + 1
+                            });
+                            data.fpage.css({
+                                zIndex: zIndex
+                            });
                         } else {
-                            leftPos = '100%';
-                            shadow = data.options.page + 1 < totalPages;
-                            gradientX = 0;
+                            relX = relX - 1;
+                            data.wrapper.css({
+                                zIndex: zIndex
+                            });
+                            data.fpage.css({
+                                zIndex: zIndex + 1
+                            });
                         }
 
-                        break;
-                    case 'r':
+                        if (turnData.options.gradients) {
 
-                        fpageOrigin = '100% 50%';
-                        parentOrigin = '0% 50%';
-                        angle = -angle;
-                        width = -width;
-
-                        if (half) {
-                            leftPos = 0;
-                            shadow = data.options.next + 1 < totalPages;
-                            gradientX = 0;
-                        } else {
-                            leftPos = '-100%';
-                            shadow = data.options.page != 1;
-                            gradientX = 1;
-                        }
-
-                        break;
-                    }
-
-                    parentCss[vendor + 'perspective-origin'] = parentOrigin;
-
-                    data.wrapper.transform('rotateY(' + angle + 'deg) translate3d(0px, 0px, ' + this.attr('depth') || 0 + 'px)', parentOrigin);
-
-                    data.fpage.transform('translateX(' + width + 'px) rotateY(' + (180 + angle) + 'deg)', fpageOrigin);
-
-                    data.parent.css(parentCss);
-
-                    if (half) {
-                        relX = -relX + 1;
-                        data.wrapper.css({
-                            zIndex: zIndex + 1
-                        });
-                        data.fpage.css({
-                            zIndex: zIndex
-                        });
-                    } else {
-                        relX = relX - 1;
-                        data.wrapper.css({
-                            zIndex: zIndex
-                        });
-                        data.fpage.css({
-                            zIndex: zIndex + 1
-                        });
-                    }
-
-                    if (turnData.options.gradients) {
-
-                        if (shadow) {
-                            data.ashadow.css({
-                                display: '',
-                                left: leftPos,
-                                backgroundColor: 'rgba(0,0,0,' + (0.5 * relX) + ')'
-                            }).transform('rotateY(0deg)');
-                        } else {
-                            data.ashadow.hide();
-                        }
-
-                        data.bshadow.css({
-                            opacity: -relX + 1
-                        });
-
-                        if (half) {
-                            if (data.bshadow.parent()[0] != data.wrapper[0]) {
-                                data.bshadow.appendTo(data.wrapper);
-                            }
-                        } else {
-                            if (data.bshadow.parent()[0] != data.fpage[0]) {
-                                data.bshadow.appendTo(data.fpage);
-                            }
-                        }
-
-                        gradient(data.bshadow,
-                            point2D(gradientX * 100, 0),
-                            point2D((-gradientX + 1) * 100, 0), [
-                                [0, 'rgba(0,0,0,0.3)'],
-                                [1, 'rgba(0,0,0,0)']
-                            ], 2);
-
-                    }
-
-                    break;
-                case 'sheet':
-
-                    var that = this,
-                        a = 0,
-                        alpha = 0,
-                        beta,
-                        px,
-                        gradientEndPointA,
-                        gradientEndPointB,
-                        gradientStartVal,
-                        gradientSize,
-                        gradientOpacity,
-                        shadowVal,
-                        mv = point2D(0, 0),
-                        df = point2D(0, 0),
-                        tr = point2D(0, 0),
-                        folding = flipMethods._foldingPage.call(this),
-                        tan = Math.tan(alpha),
-                        ac = turnData.options.acceleration,
-                        h = data.wrapper.height(),
-                        top = point.corner.substr(0, 1) == 't',
-                        left = point.corner.substr(1, 1) == 'l',
-
-                        compute = function () {
-
-                            var rel = point2D(0, 0);
-                            var middle = point2D(0, 0);
-
-                            rel.x = (o.x) ? o.x - point.x : point.x;
-
-                            if (!hasRot) {
-                                rel.y = 0;
+                            if (shadow) {
+                                data.ashadow.css({
+                                    display: '',
+                                    left: leftPos,
+                                    backgroundColor: 'rgba(0,0,0,' + (0.5 * relX) + ')'
+                                }).transform('rotateY(0deg)');
                             } else {
-                                rel.y = (o.y) ? o.y - point.y : point.y;
+                                data.ashadow.hide();
                             }
 
-                            middle.x = (left) ? width - rel.x / 2 : point.x + rel.x / 2;
-                            middle.y = rel.y / 2;
+                            data.bshadow.css({
+                                opacity: -relX + 1
+                            });
 
-                            var alpha = A90 - Math.atan2(rel.y, rel.x),
-                                gamma = alpha - Math.atan2(middle.y, middle.x),
-                                distance = Math.max(0, Math.sin(gamma) * Math.sqrt(Math.pow(middle.x, 2) + Math.pow(middle.y, 2)));
-
-                            a = deg(alpha);
-
-                            tr = point2D(distance * Math.sin(alpha), distance * Math.cos(alpha));
-
-                            if (alpha > A90) {
-                                tr.x = tr.x + Math.abs(tr.y * rel.y / rel.x);
-                                tr.y = 0;
-                                if (Math.round(tr.x * Math.tan(PI - alpha)) < height) {
-                                    point.y = Math.sqrt(Math.pow(height, 2) + 2 * middle.x * rel.x);
-                                    if (top) point.y = height - point.y;
-                                    return compute();
+                            if (half) {
+                                if (data.bshadow.parent()[0] != data.wrapper[0]) {
+                                    data.bshadow.appendTo(data.wrapper);
+                                }
+                            } else {
+                                if (data.bshadow.parent()[0] != data.fpage[0]) {
+                                    data.bshadow.appendTo(data.fpage);
                                 }
                             }
 
-                            if (alpha > A90) {
-                                var beta = PI - alpha,
-                                    dd = h - height / Math.sin(beta);
-                                mv = point2D(Math.round(dd * Math.cos(beta)), Math.round(dd * Math.sin(beta)));
-                                if (left) mv.x = -mv.x;
-                                if (top) mv.y = -mv.y;
-                            }
+                            gradient(data.bshadow,
+                                point2D(gradientX * 100, 0),
+                                point2D((-gradientX + 1) * 100, 0), [
+                                    [0, 'rgba(0,0,0,0.3)'],
+                                    [1, 'rgba(0,0,0,0)']
+                                ], 2);
 
-                            px = Math.round(tr.y / Math.tan(alpha) + tr.x);
+                        }
 
-                            var side = width - px,
-                                sideX = side * Math.cos(alpha * 2),
-                                sideY = side * Math.sin(alpha * 2);
-                            df = point2D(
-                                Math.round((left ? side - sideX : px + sideX)),
-                                Math.round((top) ? sideY : height - sideY));
+                        break;
+                    case 'sheet':
 
-                            // Gradients
-                            if (turnData.options.gradients) {
+                        var that = this,
+                            a = 0,
+                            alpha = 0,
+                            beta,
+                            px,
+                            gradientEndPointA,
+                            gradientEndPointB,
+                            gradientStartVal,
+                            gradientSize,
+                            gradientOpacity,
+                            shadowVal,
+                            mv = point2D(0, 0),
+                            df = point2D(0, 0),
+                            tr = point2D(0, 0),
+                            folding = flipMethods._foldingPage.call(this),
+                            tan = Math.tan(alpha),
+                            ac = turnData.options.acceleration,
+                            h = data.wrapper.height(),
+                            top = point.corner.substr(0, 1) == 't',
+                            left = point.corner.substr(1, 1) == 'l',
 
-                                gradientSize = side * Math.sin(alpha);
+                            compute = function () {
 
-                                var endingPoint = flipMethods._c2.call(that, point.corner),
-                                    far = Math.sqrt(Math.pow(endingPoint.x - point.x, 2) + Math.pow(endingPoint.y - point.y, 2)) / width;
+                                var rel = point2D(0, 0);
+                                var middle = point2D(0, 0);
 
-                                shadowVal = Math.sin(A90 * ((far > 1) ? 2 - far : far));
+                                rel.x = (o.x) ? o.x - point.x : point.x;
 
-                                gradientOpacity = Math.min(far, 1);
+                                if (!hasRot) {
+                                    rel.y = 0;
+                                } else {
+                                    rel.y = (o.y) ? o.y - point.y : point.y;
+                                }
+
+                                middle.x = (left) ? width - rel.x / 2 : point.x + rel.x / 2;
+                                middle.y = rel.y / 2;
+
+                                var alpha = A90 - Math.atan2(rel.y, rel.x),
+                                    gamma = alpha - Math.atan2(middle.y, middle.x),
+                                    distance = Math.max(0, Math.sin(gamma) * Math.sqrt(Math.pow(middle.x, 2) + Math.pow(middle.y, 2)));
+
+                                a = deg(alpha);
+
+                                tr = point2D(distance * Math.sin(alpha), distance * Math.cos(alpha));
+
+                                if (alpha > A90) {
+                                    tr.x = tr.x + Math.abs(tr.y * rel.y / rel.x);
+                                    tr.y = 0;
+                                    if (Math.round(tr.x * Math.tan(PI - alpha)) < height) {
+                                        point.y = Math.sqrt(Math.pow(height, 2) + 2 * middle.x * rel.x);
+                                        if (top) point.y = height - point.y;
+                                        return compute();
+                                    }
+                                }
+
+                                if (alpha > A90) {
+                                    var beta = PI - alpha,
+                                        dd = h - height / Math.sin(beta);
+                                    mv = point2D(Math.round(dd * Math.cos(beta)), Math.round(dd * Math.sin(beta)));
+                                    if (left) mv.x = -mv.x;
+                                    if (top) mv.y = -mv.y;
+                                }
+
+                                px = Math.round(tr.y / Math.tan(alpha) + tr.x);
+
+                                var side = width - px,
+                                    sideX = side * Math.cos(alpha * 2),
+                                    sideY = side * Math.sin(alpha * 2);
+                                df = point2D(
+                                    Math.round((left ? side - sideX : px + sideX)),
+                                    Math.round((top) ? sideY : height - sideY));
+
+                                // Gradients
+                                if (turnData.options.gradients) {
+
+                                    gradientSize = side * Math.sin(alpha);
+
+                                    var endingPoint = flipMethods._c2.call(that, point.corner),
+                                        far = Math.sqrt(Math.pow(endingPoint.x - point.x, 2) + Math.pow(endingPoint.y - point.y, 2)) / width;
+
+                                    shadowVal = Math.sin(A90 * ((far > 1) ? 2 - far : far));
+
+                                    gradientOpacity = Math.min(far, 1);
 
 
-                                gradientStartVal = gradientSize > 100 ? (gradientSize - 100) / gradientSize : 0;
+                                    gradientStartVal = gradientSize > 100 ? (gradientSize - 100) / gradientSize : 0;
 
-                                gradientEndPointA = point2D(
-                                    gradientSize * Math.sin(alpha) / width * 100,
-                                    gradientSize * Math.cos(alpha) / height * 100);
+                                    gradientEndPointA = point2D(
+                                        gradientSize * Math.sin(alpha) / width * 100,
+                                        gradientSize * Math.cos(alpha) / height * 100);
 
 
-                                if (flipMethods._backGradient.call(that)) {
+                                    if (flipMethods._backGradient.call(that)) {
 
-                                    gradientEndPointB = point2D(
-                                        gradientSize * 1.2 * Math.sin(alpha) / width * 100,
-                                        gradientSize * 1.2 * Math.cos(alpha) / height * 100);
+                                        gradientEndPointB = point2D(
+                                            gradientSize * 1.2 * Math.sin(alpha) / width * 100,
+                                            gradientSize * 1.2 * Math.cos(alpha) / height * 100);
 
-                                    if (!left) gradientEndPointB.x = 100 - gradientEndPointB.x;
-                                    if (!top) gradientEndPointB.y = 100 - gradientEndPointB.y;
+                                        if (!left) gradientEndPointB.x = 100 - gradientEndPointB.x;
+                                        if (!top) gradientEndPointB.y = 100 - gradientEndPointB.y;
+
+                                    }
 
                                 }
 
-                            }
+                                tr.x = Math.round(tr.x);
+                                tr.y = Math.round(tr.y);
 
-                            tr.x = Math.round(tr.x);
-                            tr.y = Math.round(tr.y);
+                                return true;
+                            },
 
-                            return true;
-                        },
+                            transform = function (tr, c, x, a) {
 
-                        transform = function (tr, c, x, a) {
+                                var f = ['0', 'auto'],
+                                    mvW = (width - h) * x[0] / 100,
+                                    mvH = (height - h) * x[1] / 100,
+                                    cssA = {
+                                        left: f[c[0]],
+                                        top: f[c[1]],
+                                        right: f[c[2]],
+                                        bottom: f[c[3]]
+                                    },
+                                    cssB = {},
+                                    aliasingFk = (a != 90 && a != -90) ? (left ? -1 : 1) : 0,
+                                    origin = x[0] + '% ' + x[1] + '%';
 
-                            var f = ['0', 'auto'],
-                                mvW = (width - h) * x[0] / 100,
-                                mvH = (height - h) * x[1] / 100,
-                                cssA = {
-                                    left: f[c[0]],
-                                    top: f[c[1]],
-                                    right: f[c[2]],
-                                    bottom: f[c[3]]
-                                },
-                                cssB = {},
-                                aliasingFk = (a != 90 && a != -90) ? (left ? -1 : 1) : 0,
-                                origin = x[0] + '% ' + x[1] + '%';
+                                that.css(cssA)
+                                    .transform(cssRotateString(a) + cssTranslateString(tr.x + aliasingFk, tr.y, ac), origin);
 
-                            that.css(cssA)
-                                .transform(cssRotateString(a) + cssTranslateString(tr.x + aliasingFk, tr.y, ac), origin);
-
-                            data.fpage
-                                .css(cssA)
-                                .transform(
+                                data.fpage
+                                    .css(cssA)
+                                    .transform(
                                     cssRotateString(a) +
                                     cssTranslateString(tr.x + df.x - mv.x - width * x[0] / 100, tr.y + df.y - mv.y - height * x[1] / 100, ac) +
                                     cssRotateString((180 / a - 2) * a),
                                     origin);
 
-                            data.wrapper
-                                .transform(cssTranslateString(-tr.x + mvW - aliasingFk, -tr.y + mvH, ac) + cssRotateString(-a), origin);
+                                data.wrapper
+                                    .transform(cssTranslateString(-tr.x + mvW - aliasingFk, -tr.y + mvH, ac) + cssRotateString(-a), origin);
 
-                            data.fwrapper
-                                .transform(cssTranslateString(-tr.x + mv.x + mvW, -tr.y + mv.y + mvH, ac) + cssRotateString(-a), origin);
+                                data.fwrapper
+                                    .transform(cssTranslateString(-tr.x + mv.x + mvW, -tr.y + mv.y + mvH, ac) + cssRotateString(-a), origin);
 
-                            if (turnData.options.gradients) {
+                                if (turnData.options.gradients) {
 
-                                if (x[0])
-                                    gradientEndPointA.x = 100 - gradientEndPointA.x;
+                                    if (x[0])
+                                        gradientEndPointA.x = 100 - gradientEndPointA.x;
 
-                                if (x[1])
-                                    gradientEndPointA.y = (100 - gradientEndPointA.y);
+                                    if (x[1])
+                                        gradientEndPointA.y = (100 - gradientEndPointA.y);
 
-                                cssB['box-shadow'] = '0 0 20px rgba(0,0,0,' + (0.5 * shadowVal) + ')';
+                                    cssB['box-shadow'] = '0 0 20px rgba(0,0,0,' + (0.5 * shadowVal) + ')';
 
-                                folding.css(cssB);
+                                    folding.css(cssB);
 
-                                gradient(data.ashadow,
-                                    point2D(left ? 100 : 0, top ? 0 : 100),
-                                    point2D(gradientEndPointA.x, gradientEndPointA.y), [
-                                        [gradientStartVal, 'rgba(0,0,0,0)'],
-                                        [((1 - gradientStartVal) * 0.8) + gradientStartVal, 'rgba(0,0,0,' + (0.2 * gradientOpacity) + ')'],
-                                        [1, 'rgba(255,255,255,' + (0.2 * gradientOpacity) + ')']
-                                    ], 3, alpha);
+                                    gradient(data.ashadow,
+                                        point2D(left ? 100 : 0, top ? 0 : 100),
+                                        point2D(gradientEndPointA.x, gradientEndPointA.y), [
+                                            [gradientStartVal, 'rgba(0,0,0,0)'],
+                                            [((1 - gradientStartVal) * 0.8) + gradientStartVal, 'rgba(0,0,0,' + (0.2 * gradientOpacity) + ')'],
+                                            [1, 'rgba(255,255,255,' + (0.2 * gradientOpacity) + ')']
+                                        ], 3, alpha);
 
-                                if (flipMethods._backGradient.call(that))
-                                    gradient(data.bshadow,
-                                        point2D(left ? 0 : 100, top ? 0 : 100),
-                                        point2D(gradientEndPointB.x, gradientEndPointB.y), [
-                                            [0.6, 'rgba(0,0,0,0)'],
-                                            [0.8, 'rgba(0,0,0,' + (0.3 * gradientOpacity) + ')'],
-                                            [1, 'rgba(0,0,0,0)']
-                                        ], 3);
-                            }
+                                    if (flipMethods._backGradient.call(that))
+                                        gradient(data.bshadow,
+                                            point2D(left ? 0 : 100, top ? 0 : 100),
+                                            point2D(gradientEndPointB.x, gradientEndPointB.y), [
+                                                [0.6, 'rgba(0,0,0,0)'],
+                                                [0.8, 'rgba(0,0,0,' + (0.3 * gradientOpacity) + ')'],
+                                                [1, 'rgba(0,0,0,0)']
+                                            ], 3);
+                                }
 
-                        };
+                            };
 
-                    switch (point.corner) {
-                    case 'tl':
-                        point.x = Math.max(point.x, 1);
-                        compute();
-                        transform(tr, [1, 0, 0, 1], [100, 0], a);
+                        switch (point.corner) {
+                            case 'tl':
+                                point.x = Math.max(point.x, 1);
+                                compute();
+                                transform(tr, [1, 0, 0, 1], [100, 0], a);
+                                break;
+                            case 'tr':
+                                point.x = Math.min(point.x, width - 1);
+                                compute();
+                                transform(point2D(-tr.x, tr.y), [0, 0, 0, 1], [0, 0], -a);
+                                break;
+                            case 'bl':
+                                point.x = Math.max(point.x, 1);
+                                compute();
+                                transform(point2D(tr.x, -tr.y), [1, 1, 0, 0], [100, 100], -a);
+                                break;
+                            case 'br':
+                                point.x = Math.min(point.x, width - 1);
+                                compute();
+                                transform(point2D(-tr.x, -tr.y), [0, 1, 1, 0], [0, 100], a);
+                                break;
+                            default:
+                                break;
+                        }
+
                         break;
-                    case 'tr':
-                        point.x = Math.min(point.x, width - 1);
-                        compute();
-                        transform(point2D(-tr.x, tr.y), [0, 0, 0, 1], [0, 0], -a);
-                        break;
-                    case 'bl':
-                        point.x = Math.max(point.x, 1);
-                        compute();
-                        transform(point2D(tr.x, -tr.y), [1, 1, 0, 0], [100, 100], -a);
-                        break;
-                    case 'br':
-                        point.x = Math.min(point.x, width - 1);
-                        compute();
-                        transform(point2D(-tr.x, -tr.y), [0, 1, 1, 0], [0, 100], a);
-                        break;
-                    default:
-                        break;
-                    }
-
-                    break;
 
                 }
 
@@ -2900,7 +2897,7 @@
 
                         var that = this,
                             point = (data.point && data.point.corner == c.corner) ?
-                            data.point : flipMethods._c.call(this, c.corner, 1);
+                                data.point : flipMethods._c.call(this, c.corner, 1);
 
                         this.animatef({
                             from: [point.x, point.y],
@@ -2925,27 +2922,27 @@
                     if (!visible) {
 
                         switch (data.effect) {
-                        case 'hard':
+                            case 'hard':
 
-                            data.visible = true;
-                            flipMethods._moveFoldingPage.call(this, true);
-                            data.fpage.show();
-                            if (data.options.shadows)
-                                data.bshadow.show();
+                                data.visible = true;
+                                flipMethods._moveFoldingPage.call(this, true);
+                                data.fpage.show();
+                                if (data.options.shadows)
+                                    data.bshadow.show();
 
-                            break;
-                        case 'sheet':
+                                break;
+                            case 'sheet':
 
-                            data.visible = true;
-                            data.fparent.show()
-                                .data()
-                                .flips++;
-                            flipMethods._moveFoldingPage.call(this, true);
-                            data.fwrapper.show();
-                            if (data.bshadow)
-                                data.bshadow.show();
+                                data.visible = true;
+                                data.fparent.show()
+                                    .data()
+                                    .flips++;
+                                flipMethods._moveFoldingPage.call(this, true);
+                                data.fwrapper.show();
+                                if (data.bshadow)
+                                    data.bshadow.show();
 
-                            break;
+                                break;
                         }
 
                     }
@@ -2964,41 +2961,41 @@
                     folding = flipMethods._foldingPage.call(this);
 
                 switch (data.effect) {
-                case 'hard':
+                    case 'hard':
 
-                    if (turnData.options.gradients) {
-                        data.bshadowLoc = 0;
-                        data.bshadow.remove();
-                        data.ashadow.hide();
-                    }
+                        if (turnData.options.gradients) {
+                            data.bshadowLoc = 0;
+                            data.bshadow.remove();
+                            data.ashadow.hide();
+                        }
 
-                    data.wrapper.transform();
-                    data.fpage.hide();
+                        data.wrapper.transform();
+                        data.fpage.hide();
 
-                    break;
-                case 'sheet':
+                        break;
+                    case 'sheet':
 
-                    if (data.fparent.data().flips - 1 === 0)
-                        data.fparent.hide();
+                        if (data.fparent.data().flips - 1 === 0)
+                            data.fparent.hide();
 
-                    this.css({
+                        this.css({
                             left: 0,
                             top: 0,
                             right: 'auto',
                             bottom: 'auto'
                         })
-                        .transform();
+                            .transform();
 
-                    data.wrapper.transform();
+                        data.wrapper.transform();
 
-                    data.fwrapper.hide();
+                        data.fwrapper.hide();
 
-                    if (data.bshadow)
-                        data.bshadow.hide();
+                        if (data.bshadow)
+                            data.bshadow.hide();
 
-                    folding.transform();
+                        folding.transform();
 
-                    break;
+                        break;
                 }
 
                 data.visible = false;
@@ -3117,7 +3114,7 @@
 
                 if (!data.corner && !data.disabled && !this.flip('isTurning') &&
                     data.options.page == turn.data()
-                    .pagePlace[data.options.page]) {
+                        .pagePlace[data.options.page]) {
 
                     data.corner = flipMethods._isIArea.call(this, e);
 
@@ -3223,7 +3220,7 @@
                 if (corner) {
 
                     if ($.inArray(corner, corners.all) == -1)
-                        throw new turnError('Corner "' + corner + '" is not valid.');
+                        throw new Error('Corner "' + corner + '" is not valid.');
 
                     if ($.inArray(corner, flipMethods._cAllowed.call(this)) != -1) {
 
@@ -3254,27 +3251,25 @@
 
 
     // Processes classes
-
     function dec(elem, methods, args) {
         if (!args[0] || typeof (args[0]) == 'object')
             return methods.init.apply(elem, args);
         else if (methods[args[0]] !== undefined)
             return methods[args[0]].apply(elem, Array.prototype.slice.call(args, 1)); // Array.prototype.slice will convert the arguments object
         else
-            throw new turnError('"' + args[0] + '" is not a method or property.');
+            throw new Error('"' + args[0] + '" is not a method or property.');
         return false;
     }
 
 
     // Attributes for a layer
-    function divStyle(top, left, zIndex, overf) {
-
+    function divStyle(top, left, zIndex, overflow) {
         return {
             css: {
                 position: 'absolute',
                 top: top,
                 left: left,
-                overflow: overf || 'hidden',
+                overflow: overflow || 'hidden',
                 zIndex: zIndex || 'auto'
             }
         };
@@ -3294,45 +3289,50 @@
 
     }
 
-    // Converts an angle from degrees to radians
-
+    /**
+     * @description Converts an angle from degrees to radians
+     * @param {int|string} degress : The number in degress to be converted to radians.
+     * @return {int|float} A radian number.
+     */
     function rad(degrees) {
-
         return degrees / 180 * PI;
-
     }
 
-    // Converts an angle from radians to degrees
-
+    /**
+     * @description Converts an angle from radians to degrees
+     * @param {int|string} radians : The number in radians to be converted to degress.
+     * @return {int|float} A degree number.
+     */
     function deg(radians) {
-
         return radians / PI * 180;
-
     }
 
-    // Gets a 2D point
-
+    /** 
+     * @description Gets a 2D point
+     * @param {int|float} x
+     * @param {int|float} y
+     * @return {object}
+     */
     function point2D(x, y) {
-
         return {
             x: x,
             y: y
         };
-
     }
 
     /**
-     * Webkit 534.3 on Android wrongly repaints elements that use overflow:hidden + rotation
+     * @description Webkit 534.3 on Android wrongly repaints elements that use overflow:hidden + rotation
      **/
     function rotationAvailable() {
         var parts = /AppleWebkit\/([0-9\.]+)/i.exec(navigator.userAgent);
-
         return (parts) ? parseFloat(parts[1]) > 534.3 : true; // parseFloat = webkitVersion;
-
     }
 
     /**
-     * @return {int|float} Returns a CSS `translate3d` string function.
+     * @param x 
+     * @param y 
+     * @param use3d
+     * @return {string} A CSS `translate3d` string function.
      **/
     function cssTranslateString(x, y, use3d) {
 
@@ -3341,14 +3341,17 @@
     }
 
     /**
-     * @return {int|float} Returns a CSS `rotation` string function.
+     * @return {string} A CSS `rotation` string function.
      **/
     function cssRotateString(degrees) {
         return ' rotate(' + degrees + 'deg) ';
     }
 
     /**
-     * @return {boolean} Checks if a property belongs to an object.
+     * @description Checks if a property belongs to an object.
+     * @param {string} property : The property index to check.
+     * @param {Object} object : Object who should have the property.
+     * @return {boolean} 
      **/
     function has(property, object) {
         return Object.prototype.hasOwnProperty.call(object, property);
@@ -3357,7 +3360,7 @@
     /**
      * @return {string} The CSS3 vendor prefix.
      **/
-    function getPrefix() {
+    function getCSSVendorPrefix() {
 
         var vendorPrefixes = ['Moz', 'Webkit', 'Khtml', 'O', 'ms'],
             len = vendorPrefixes.length,
@@ -3405,11 +3408,11 @@
 
             $elem.css({
                 'background-image': '-webkit-gradient(linear, ' +
-                    p0.x + '% ' +
-                    p0.y + '%,' +
-                    p1.x + '% ' +
-                    p1.y + '%, ' +
-                    cols.join(',') + ' )'
+                p0.x + '% ' +
+                p0.y + '%,' +
+                p1.x + '% ' +
+                p1.y + '%, ' +
+                cols.join(',') + ' )'
             });
         } else {
             p0 = {
@@ -3448,23 +3451,18 @@
 
 
     // Triggers an event
-
     function trigger(eventName, context, args) {
 
         var event = $.Event(eventName);
         context.trigger(event, args);
-        if (event.isDefaultPrevented())
-            return 'prevented';
-        else if (event.isPropagationStopped())
-            return 'stopped';
-        else
-            return '';
-    }
 
-    // JS Errors
-    function turnError(message) {
-        this.message = message;
-        this.name = "TurnJSException";
+        if (event.isDefaultPrevented()) {
+            return 'prevented';
+        } else if (event.isPropagationStopped()) {
+            return 'stopped';
+        }
+
+        return '';
     }
 
     // Request an animation
@@ -3492,14 +3490,10 @@
 
         transform: function (transform, origin) {
 
-            var properties = {};
-
-            if (origin !== undefined)
-                properties[vendor + 'transform-origin'] = origin;
-
-            properties[vendor + 'transform'] = transform || '';
-
-            return this.css(properties);
+            return this.css({
+                transformOrigin: origin,
+                transform: transform
+            });
 
         },
 
@@ -3507,8 +3501,9 @@
 
             var data = this.data();
 
-            if (data.effect)
+            if (data.effect) {
                 data.effect.stop();
+            }
 
             if (point) {
 
@@ -3520,7 +3515,7 @@
                     animating = true,
                     that = this,
                     time = (new Date())
-                    .getTime(),
+                        .getTime(),
                     frame = function () {
 
                         if (!data.effect || !animating)
@@ -3536,7 +3531,7 @@
                         point.frame((len == 1) ? v[0] : v);
 
                         if (timeDiff == point.duration) {
-                            delete data['effect'];
+                            delete data.effect;
                             that.data(data);
                             if (point.complete)
                                 point.complete();
@@ -3563,7 +3558,7 @@
 
             } else {
 
-                delete data['effect'];
+                delete data.effect;
 
             }
         }
