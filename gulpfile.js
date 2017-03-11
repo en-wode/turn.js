@@ -5,46 +5,42 @@ var gulp = require('gulp'),
   jshint = require('gulp-jshint'),
   uglify = require('gulp-uglify'),
   rename = require('gulp-rename'),
-  clean = require('gulp-clean'),
-  notify = require('gulp-notify'),
-  cache = require('gulp-cache');
+  clean = require('gulp-clean');
 
 var sourceMaps = require('gulp-sourcemaps');
 var less = require('gulp-less');
-var remember = require('gulp-remember');
 
 // Styles
 gulp.task('styles', function () {
   return gulp.src('src/css/*.less')
     .pipe(sourceMaps.init())
-    .pipe(cache('less'))
     .pipe(less())
-    .pipe(remember('less'))
-    .pipe(sourceMaps.write('dist/css/'))
-    .pipe(gulp.dest('dist/css/'));
+    .pipe(cleanCSS())
+    .pipe(autoprefixer())
+    .pipe(rename({ suffix: '.min' }))
+    // .pipe(uglify())
+    .pipe(sourceMaps.write('/'))
+    .pipe(gulp.dest('dist/css'));
 });
 
 // Scripts
 gulp.task('scripts', function () {
   return gulp.src('src/js/*.js')
-    .pipe(jshint('.jshintrc'))
+    .pipe(jshint())
     .pipe(jshint.reporter('default'))
-    .pipe(gulp.dest('dist/js'))
     .pipe(rename({ suffix: '.min' }))
     .pipe(uglify())
-    .pipe(gulp.dest('dist/js'))
-    .pipe(notify({ message: 'Scripts task complete' }));
+    .pipe(gulp.dest('dist/js'));
 });
 
 // Clean
 gulp.task('clean', function () {
-  return gulp.src('dist/', { read: false })
-    .pipe(clean());
+  return gulp.src('dist/', { read: false }).pipe(clean());
 });
 
 // Default task
-gulp.task('default', ['clean'], function () {
-  gulp.run('styles', 'scripts');
+gulp.task('default', ['clean'], function (params) {
+  gulp.start('styles', 'scripts');
 });
 
 // Watch
